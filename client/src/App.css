@@ -1,0 +1,51 @@
+.App {
+  margin: 0%;
+  padding: 0%;
+}
+
+#bg-ig {
+  margin: auto;
+  background-image: url("./Images/sc.gif");
+  background-repeat: no-repeat;
+  background-size: contain;
+  /* width: 414px; */
+  height: 736px;
+  border: 2px solid;
+  color: pink;
+  background-position: center;
+}
+
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #04aa6d;
+}
+
+li {
+  padding: 14px 16px;
+}
+
+li .navLink {
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+li .navLink:hover:not(.active) {
+  background-color: #111;
+}
+
+.active {
+  background-color: #04aa6d;
+}
+
+.homeMain {
+  border: 2px solid;
+  color: pink;
+  padding: 20px;
+  margin: auto;
+}
