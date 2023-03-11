@@ -14,7 +14,7 @@ export const SignIn = () => {
     console.log("Submitted password:", password);
     // add your form submission logic her
     axios
-      .post("http://localhost:8080/api/auth", {
+      .post("http://localhost:8081/api/auth", {
         email,
         password,
       })

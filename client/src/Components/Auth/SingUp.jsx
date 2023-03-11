@@ -22,7 +22,7 @@ export const SingUp = () => {
     event.preventDefault();
     // handle form submission here
     axios
-      .post("http://localhost:8080/api/user", formData)
+      .post("http://localhost:8081/api/user", formData)
       .then(function (response) {
         navigate("/upload");
         console.log(response);

@@ -2,7 +2,7 @@ import React from "react";
 import { Route, Routes } from "react-router-dom";
 import { SignIn } from "../Auth/SignIn";
 import { SingUp } from "../Auth/SingUp";
-import { Calculator } from "../Calculator/Calculator";
+import Calculator from "../Calculator/Calculator";
 import { Navbar } from "../Navigation/Navbar";
 import { Notification } from "../Notification/Notification";
 import { UploadPhoto } from "../UploadPhoto/UploadPhoto";
