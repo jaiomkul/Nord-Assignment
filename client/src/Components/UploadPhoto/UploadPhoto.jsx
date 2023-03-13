@@ -41,7 +41,8 @@ export const UploadPhoto = () => {
 
   const handleFileInputChange = (e) => {
     if (e.target.files[0]) {
-      setImage(e.target.files[0]);
+      const imageUrl = URL.createObjectURL(e.target.files[0]);
+      setImage(imageUrl);
       setShowPreview(true);
       setShowSubmit(true);
       setUseCamera(false);
@@ -60,12 +61,17 @@ export const UploadPhoto = () => {
   };
 
   const handleSubmit = async () => {
+    // Convert the base64-encoded image to a binary format
+    const blob = await fetch(image).then((r) => r.blob());
+
     // Get a reference to the storage location where the image will be uploaded
-    const storageRef = ref(storage, "images/" + uuidv4());
+    const storageRef = ref(storage, "images/" + uuidv4() + ".jpg");
 
     try {
-      // Upload the image to the storage location
-      const snapshot = await uploadBytes(storageRef, image);
+      // Upload the image to the storage location as a JPEG file
+      const snapshot = await uploadBytes(storageRef, blob, {
+        contentType: "image/jpeg",
+      });
 
       // Get the download URL of the uploaded image
       const downloadURL = await getDownloadURL(snapshot.ref);
@@ -84,6 +90,9 @@ export const UploadPhoto = () => {
       setImage(null);
       setShowPreview(false);
       setShowSubmit(false);
+
+      // Clear the file input
+      document.getElementById("file-input").value = "";
     } catch (error) {
       console.error(error);
     }
@@ -118,12 +127,6 @@ export const UploadPhoto = () => {
       ) : (
         <div className="mb-4">
           <h1 className="text-2xl font-bold">Choose a File</h1>
-          {/* <input
-            type="file"
-            accept="image/*"
-            onChange={handleFileInputChange}
-            className="border-2 border-gray-200 w-full h-auto p-4"
-          /> */}
 
           <input
             id="file-input"
