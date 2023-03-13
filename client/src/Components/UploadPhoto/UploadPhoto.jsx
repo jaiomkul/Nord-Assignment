@@ -99,91 +99,101 @@ export const UploadPhoto = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center">
-      {useCamera ? (
-        <div className="mb-4">
-          <h1 className="text-2xl font-bold">Take a Photo</h1>
-          <Webcam
-            audio={false}
-            ref={webcamRef}
-            screenshotFormat="image/jpeg"
-            className="border-2 border-gray-200 w-full h-auto"
-          />
-          <div className="mt-4 flex justify-between">
+    <div className="max-w-screen-lg mx-auto">
+      <div className="flex flex-col items-center justify-center">
+        {useCamera ? (
+          <div className="mb-8">
+            <h1 className="text-2xl font-bold mb-2">Take a Photo</h1>
+            <Webcam
+              audio={false}
+              ref={webcamRef}
+              screenshotFormat="image/jpeg"
+              className="border-2 border-gray-200 w-full h-auto"
+            />
+            <div className="mt-4 flex justify-between">
+              <button
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-4"
+                onClick={capture}
+              >
+                Capture
+              </button>
+              <button
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                onClick={() => setUseCamera(false)}
+              >
+                Choose File
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="mb-8">
+            <h1 className="text-2xl font-bold mb-2">Choose a File</h1>
+            <input
+              id="file-input"
+              type="file"
+              accept="image/*"
+              onChange={handleFileInputChange}
+              className="border-2 border-gray-200 w-full h-auto p-4"
+            />
+            <div className="mt-4 flex justify-between">
+              <button
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-4"
+                onClick={() => setUseCamera(true)}
+              >
+                Use Camera
+              </button>
+              <button
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                disabled={!showSubmit}
+                onClick={handleSubmit}
+              >
+                Upload
+              </button>
+            </div>
+          </div>
+        )}
+
+        {showPreview && (
+          <div className="mb-8">
+            <h1 className="text-2xl font-bold mb-2">Preview</h1>
+            <img src={image} alt="Preview" className="w-full h-auto" />
             <button
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-              onClick={capture}
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
+              onClick={handleRetake}
             >
-              Capture
-            </button>
-            <button
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-              onClick={() => setUseCamera(false)}
-            >
-              Choose File
+              Retake/Clear
             </button>
           </div>
-        </div>
-      ) : (
-        <div className="mb-4">
-          <h1 className="text-2xl font-bold">Choose a File</h1>
+        )}
 
-          <input
-            id="file-input"
-            type="file"
-            accept="image/*"
-            onChange={handleFileInputChange}
-            className="border-2 border-gray-200 w-full h-auto p-4"
-          />
-          <div className="mt-4 flex justify-between">
-            <button
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-              onClick={() => setUseCamera(true)}
-            >
-              Use Camera
-            </button>
-            <button
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-              disabled={!showSubmit}
-              onClick={handleSubmit}
-            >
-              Upload
-            </button>
-          </div>
-        </div>
-      )}
-
-      {showPreview && (
-        <div className="mb-4">
-          <h1 className="text-2xl font-bold">Preview</h1>
-          <img src={image} alt="Preview" className="w-full h-auto" />
-          <button
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
-            onClick={handleRetake}
-          >
-            Retake/Clear
-          </button>
-        </div>
-      )}
-
-      {uploadedData.length > 0 && (
-        <div className="mt-4">
-          <h1 className="text-2xl font-bold">Uploaded Files</h1>
-          <div className="flex flex-wrap justify-start">
-            <div className="grid grid-cols-3 gap-4">
+        {uploadedData.length > 0 && (
+          <div className="mt-8">
+            <h1 className="text-2xl font-bold mb-4">Uploaded Files</h1>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
               {uploadedData.map((data) => (
-                <div key={data.id} className="w-48 h-48 p-2">
+                <div
+                  key={data.id}
+                  className="flex flex-col justify-center items-center bg-white rounded-lg shadow-md p-4"
+                >
                   <img
                     src={data.url}
                     alt="Uploaded"
-                    className="w-full h-full object-contain"
+                    className="w-full h-auto object-contain mb-4"
                   />
+                  <a
+                    href={data.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-500 hover:text-blue-700 font-semibold"
+                  >
+                    View Full Size
+                  </a>
                 </div>
               ))}
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };
