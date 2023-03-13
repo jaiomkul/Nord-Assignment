@@ -22,9 +22,12 @@ export const SingUp = () => {
     event.preventDefault();
     // handle form submission here
     axios
-      .post("http://localhost:8081/api/user", formData)
+      .post(
+        "https://nord-assignment-production.up.railway.app/api/user",
+        formData
+      )
       .then(function (response) {
-        navigate("/upload");
+        navigate("/signIn");
         console.log(response);
         console.log(response.data.message);
         alert(response.data.message);

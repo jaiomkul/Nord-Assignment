@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Webcam from "react-webcam";
 import { db, storage } from "../../Configs/Firebase";
 import { v4 as uuidv4 } from "uuid";
-import { getDownloadURL, ref } from "firebase/storage";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { addDoc, collection, onSnapshot } from "firebase/firestore";
 
 export const UploadPhoto = () => {
   const [image, setImage] = useState(null);
@@ -12,7 +13,23 @@ export const UploadPhoto = () => {
   const [useCamera, setUseCamera] = useState(false);
 
   const webcamRef = React.useRef(null);
-  console.log(storage);
+  console.log(uploadedData);
+
+  useEffect(() => {
+    const imagesRef = collection(db, "images");
+    const unsubscribe = onSnapshot(imagesRef, (querySnapshot) => {
+      const images = [];
+      querySnapshot.forEach((doc) => {
+        images.push({
+          id: doc.id,
+          url: doc.data().url,
+        });
+      });
+      setUploadedData(images);
+    });
+
+    return unsubscribe;
+  }, []);
 
   const capture = React.useCallback(() => {
     const imageSrc = webcamRef.current.getScreenshot();
@@ -24,9 +41,7 @@ export const UploadPhoto = () => {
 
   const handleFileInputChange = (e) => {
     if (e.target.files[0]) {
-      const file = e.target.files[0];
-      const imageUrl = URL.createObjectURL(file);
-      setImage(imageUrl);
+      setImage(e.target.files[0]);
       setShowPreview(true);
       setShowSubmit(true);
       setUseCamera(false);
@@ -44,38 +59,33 @@ export const UploadPhoto = () => {
     }
   };
 
-  const handleSubmit = () => {
-    if (image) {
-      const imageName = uuidv4();
-      const uploadTask = storage.ref(`images/${imageName}`).put(image);
-      uploadTask.on(
-        "state_changed",
-        (snapshot) => {},
-        (error) => {
-          console.log(error);
-        },
-        () => {
-          storage
-            .ref("images")
-            .child(imageName)
-            .getDownloadURL()
-            .then((url) => {
-              db.collection("photos")
-                .add({
-                  url,
-                })
-                .then((docRef) => {
-                  setUploadedData((prevData) => [
-                    ...prevData,
-                    { id: docRef.id, url: url },
-                  ]);
-                })
-                .catch((error) => {
-                  console.log(error);
-                });
-            });
-        }
-      );
+  const handleSubmit = async () => {
+    // Get a reference to the storage location where the image will be uploaded
+    const storageRef = ref(storage, "images/" + uuidv4());
+
+    try {
+      // Upload the image to the storage location
+      const snapshot = await uploadBytes(storageRef, image);
+
+      // Get the download URL of the uploaded image
+      const downloadURL = await getDownloadURL(snapshot.ref);
+
+      // Save the download URL to the database
+      const docRef = await addDoc(collection(db, "images"), {
+        url: downloadURL,
+      });
+
+      // Update the uploadedData state with the new image data
+      setUploadedData([...uploadedData, { id: docRef.id, url: downloadURL }]);
+
+      alert("Upload successful!");
+
+      // Reset the image state and hide the preview
+      setImage(null);
+      setShowPreview(false);
+      setShowSubmit(false);
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -157,15 +167,17 @@ export const UploadPhoto = () => {
         <div className="mt-4">
           <h1 className="text-2xl font-bold">Uploaded Files</h1>
           <div className="flex flex-wrap justify-start">
-            {uploadedData.map((data) => (
-              <div key={data.id} className="w-48 h-48 p-2">
-                <img
-                  src={data.url}
-                  alt="Uploaded"
-                  className="w-full h-full object-contain"
-                />
-              </div>
-            ))}
+            <div className="grid grid-cols-3 gap-4">
+              {uploadedData.map((data) => (
+                <div key={data.id} className="w-48 h-48 p-2">
+                  <img
+                    src={data.url}
+                    alt="Uploaded"
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       )}

@@ -14,14 +14,14 @@ export const SignIn = () => {
     console.log("Submitted password:", password);
     // add your form submission logic her
     axios
-      .post("http://localhost:8081/api/auth", {
+      .post("https://nord-assignment-production.up.railway.app/api/auth", {
         email,
         password,
       })
       .then(function (response) {
         localStorage.setItem("token", response.data.data);
-        navigate("/");
-        // window.location = "/cart";
+        navigate("/calculator");
+        // window.location = "/";
         console.log(response.data.message);
         alert(response.data.message);
       })
